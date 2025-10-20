@@ -1,0 +1,57 @@
+/* Minimal Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Nav styling */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color:  #4a90e2; /* nav background */
+  padding: 10px 20px;
+  color: white;
+}
+
+nav h1 {
+  color: white;
+}
+
+nav div a {
+  color: white;
+  margin-left: 15px;
+  text-decoration: none;
+}
+
+/* Hero section */
+.hero {
+  height: calc(100vh - 50px); /* full screen minus nav */
+  background:linear-gradient(135deg, #4a90e2, #50c9c3); /* hero background */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+}
+
+.hero h2 {
+  margin-bottom: 15px;
+}
+
+.hero p {
+  margin-bottom: 20px;
+}
+
+/* Button */
+.hero .btn {
+  background-color: yellow;
+  color: black; /* optional, text white */
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  
+}
