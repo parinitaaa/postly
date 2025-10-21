@@ -5,6 +5,10 @@ const path=require('path');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const { hash } = require('crypto');
+const router = express.Router();
+
+app.set('view engine','ejs');
+
 
 app.use(express.urlencoded({ extended: true })); // parse form data
 app.use(express.json());
@@ -66,10 +70,19 @@ app.post('/login',async(req,res)=>{
                 <a href='/login'>Try again</a>
             `);
     }
-      req.session.userId = user.id;
+      req.session.userId = user.user_id;
       req.session.username = user.username;
-      return res.redirect('/home');
+      return res.redirect('/profile');
 });
+
+
+app.get("/profile", async (req, res) => {
+    const userId = req.session.userId;
+  const user = (await pool.query("SELECT user_id, username, email, bio FROM users WHERE user_id=$1", [userId])).rows[0];
+  const posts = (await pool.query("SELECT post_id, title FROM posts WHERE user_id=$1", [userId])).rows;
+    res.render("profile", { user,posts });
+})
+
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
 });

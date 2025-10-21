@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= user.username %> - Profile</title>
+  <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <section class="profile-container">
+    <% if(user) { %>
+    <h1>👤 <%= user.username %></h1>
+    <p><b>Email:</b> <%= user.email %></p>
+    <p><b>Bio:</b> <%= user.bio || "No bio yet." %></p>
+    <a href="/profile/edit">Edit Profile</a>
+    <% } else { %>
+      <p> user not found :(</p>
+      <% } %>
+
+       <h2>📝 Your Posts</h2>
+    <% if (posts.length > 0) { %>
+      <ul>
+        <% posts.forEach(post => { %>
+          <li>
+            <a href="/posts/<%= post.post_id %>"><%= post.title %></a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p>You haven’t written any posts yet.</p>
+    <% } %>
+
+  </section>
+
+  
+
+</body>
+</html>
