@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
   <title>Edit Profile</title>
   <link rel="stylesheet" href="/public/style.css">
 </head>
+
 <body>
   <nav>
     <a href="/profile">Back to Profile</a>
@@ -13,14 +12,15 @@
   <section class="edit-profile">
     <h1>Edit Your Profile</h1>
     <form action="/profile/edit" method="POST">
-      <label>Username:</label>
+      
+        <label>Username:</label>
       <input type="text" name="username" value="<%= user.username %>" required>
 
       <label>Email:</label>
       <input type="email" name="email" value="<%= user.email %>" disabled>
 
       <label>Bio:</label>
-      <textarea name="bio"><%= user.bio || '' %></textarea>
+      <textarea name="bio"> <%= user.bio || '' %></textarea>
 
       <label>Change Password:</label>
       <input type="password" name="password" placeholder="Enter new password (optional)">
@@ -29,4 +29,3 @@
     </form>
   </section>
 </body>
-</html>

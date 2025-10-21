@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
   <title><%= user.username %> - Profile</title>
   <link rel="stylesheet" href="/public/style.css">
 </head>
+
 <body>
   <nav>
     <a href="/">Home</a>
-    <a href="/logout">Logout</a>
+    <a href="/login">Logout</a>
   </nav>
 
   <section class="profile-container">
+
     <% if(user) { %>
     <h1>👤 <%= user.username %></h1>
     <p><b>Email:</b> <%= user.email %></p>
@@ -35,8 +35,5 @@
     <% } %>
 
   </section>
-
-  
-
 </body>
-</html>
+

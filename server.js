@@ -83,6 +83,29 @@ app.get("/profile", async (req, res) => {
     res.render("profile", { user,posts });
 })
 
+app.get("/profile/edit",async(req,res)=>{
+    const userId=req.session.userId;
+    const user = (await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
+     if (!user) {
+      return res.redirect("/login"); // redirect if not logged in
+    }
+  res.render("editProfile", { user });
+})
+
+app.post('/profile/edit',async(req,res)=>{
+    const userId=req.session.userId;
+    if (!userId) return res.redirect("/login");
+    const{username,bio,password}=req.body;
+    if (password && password.trim() !== "")
+    {
+        const hashed = await bcrypt.hash(password,10);
+        await pool.query("update users set username=$1, bio=$2, password=$3 where user_id=$4",[username,bio,hashed,userId]);
+    }
+    else
+        await pool.query("UPDATE users SET username=$1, bio=$2 WHERE user_id=$3", [username, bio, userId]);
+    res.redirect("/profile");
+})
+
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
 });
