@@ -49,7 +49,7 @@ nav div a {
 /* Button */
 .hero .btn {
   background-color: yellow;
-  color: black; /* optional, text white */
+  color: white; /* optional, text white */
   padding: 10px 20px;
   text-decoration: none;
   border-radius: 5px;
