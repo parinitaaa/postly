@@ -138,8 +138,9 @@ app.get('/posts/:post_id',async(req,res)=>{
   const post_id=req.params.post_id;
   const userId=req.session.userId;
   if(!userId) return res.redirect('/login');
+
   const users=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
-    const posts=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [post_id])).rows;
+ const posts=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [post_id])).rows;
     res.render("posts",{posts,users});
 })
   
