@@ -13,20 +13,21 @@
        <% } %>
       <strong><h3>Update a New Post</h3> </strong>
       <form action="/posts/<%=post.post_id%>/update" method="POST">
-        <label>Title:</label><br>
-        <input type="text" name="title" value="<%= post.title %>" required><br><br>
+  <label>Title:</label><br>
+  <input type="text" name="title" value="<%- post.title %>" required><br><br>
 
-        <label>Caption:</label><br>
-        <input type="text" name="caption" value="<%= post.caption %>"optional><br><br>
+  <label>Caption:</label><br>
+  <input type="text" name="caption" value="<%- post.caption || '' %>"><br><br>
 
-        <label>Content:</label><br>
-        <textarea name="content" rows="6" required><%= post.content %></textarea><br><br>
+  <label>Content:</label><br>
+<textarea name="content" rows="6" required><%- post.content || '' %></textarea><br><br>
 
-        <label>Hashtags (comma separated):</label><br>
-        <input type="text" name="hashtags" placeholder="#life, #blog" optional><br><br>
 
-        <button type="submit">Publish</button>
-      </form>
+  <label>Hashtags (space separated):</label><br>
+  <input type="text" name="hashtags" value="<%- post.hashtags ? post.hashtags.join(' ') : '' %>"><br><br>
+
+  <button type="submit">Publish</button>
+</form>
     </section>
   </body>
 

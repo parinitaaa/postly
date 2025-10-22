@@ -18,7 +18,7 @@
           <p>caption: <%= post.caption %></p>
           <p><%= post.content %></p>
           <% if (post.hashtags && post.hashtags.length) { %>
-            <p><%= post.hashtags.join(", ") %></p>
+            <p>hashtags: <%= post.hashtags.join(", ") %></p>
           <% } %>
           <div>
             likes: <%= post.likes_count %> | comments: <%= post.comments_count %>

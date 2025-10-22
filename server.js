@@ -6,13 +6,10 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const { hash } = require('crypto');
 const router = express.Router();
-
-app.set('view engine','ejs');
-
-
 app.use(express.urlencoded({ extended: true })); // parse form data
 app.use(express.json());
 
+app.set('view engine','ejs');
 
 app.use(session({
     secret: 'mysecret', // any random string
@@ -128,8 +125,13 @@ app.post('/new',async(req,res)=>{
     const userId=req.session.userId;
     if(!userId)
         return res.redirect('/login');
-    const {title,caption,content}=req.body;
-    await pool.query("insert into posts(user_id,title,caption,content) values($1,$2,$3,$4)",[userId,title,caption,content]);
+    const {title,caption,content,hashtags}=req.body;
+    
+    let hashtagsArray = null;
+    if (hashtags && hashtags.trim() !== "") {
+        hashtagsArray = hashtags.split(" ").map(tag => tag.trim()).filter(tag => tag !== "");// .split(" ") might produce empty strings in the array:
+    }//To avoid this, you can filter out empty strings:
+    await pool.query("insert into posts(user_id,title,caption,content,hashtags) values($1,$2,$3,$4,$5)",[userId,title,caption,content,hashtagsArray]);
     res.redirect('/profile');
 
 });
@@ -146,7 +148,6 @@ app.get('/posts/:post_id',async(req,res)=>{
 
 app.get('/posts/:post_id/update',async(req,res)=>{
     const postId=req.params.post_id;
-    console.log("Updating post ID:", postId);
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
     const user=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
@@ -160,8 +161,14 @@ app.post('/posts/:post_id/update',async(req,res)=>{
     if (isNaN(postId)) return res.send("Invalid post ID");
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
-    const { title, caption, content} = req.body;
-    await pool.query('update posts set title=$1,caption=$2,content=$3 where post_id=$4',[title, caption, content,postId]);
+    const { title, caption, content,hashtags} = req.body;
+
+    let hashtagsArray = null;
+    if (hashtags && hashtags.trim() !== "") 
+        hashtagsArray = hashtags.split(" ").map(tag => tag.trim()).filter(tag => tag !== "");
+ 
+    
+    await pool.query('update posts set title=$1,caption=$2,content=$3,hashtags=$4 where post_id=$5',[title, caption, content,hashtagsArray,postId]);
     res.redirect('/profile');
     
 })
@@ -186,6 +193,7 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
 });
+
 app.listen(3000,()=>{
-    console.log(`http://localhost:3000`);
+    console.log(`http://localhost:3000/`);
 })
