@@ -157,6 +157,7 @@ app.get('/posts/:post_id/update',async(req,res)=>{
 
 app.post('/posts/:post_id/update',async(req,res)=>{
     const postId=req.params.post_id;
+    if (isNaN(postId)) return res.send("Invalid post ID");
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
     const { title, caption, content} = req.body;
@@ -165,6 +166,23 @@ app.post('/posts/:post_id/update',async(req,res)=>{
     
 })
 
+app.post('/posts/:post_id/delete',async(req,res)=>{  //post request for the button
+    const postId=req.params.post_id;
+    if (isNaN(postId)) return res.send("Invalid post ID");
+     const userId=req.session.userId;
+    if(!userId) return res.redirect('/login');
+    await pool.query('delete from posts where post_id=$1 and user_id=$2',[postId,userId]);
+    res.redirect('/profile');
+
+})
+app.get('/posts/:post_id/delete', async (req, res) => { //get request when you type url manually
+    const postId = req.params.post_id;
+    if (isNaN(postId)) return res.send("Invalid post ID");
+    const userId = req.session.userId;
+    if (!userId) return res.redirect('/login');
+    await pool.query('DELETE FROM posts WHERE post_id=$1 AND user_id=$2', [postId, userId]);
+    res.redirect('/profile');
+});
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
 });

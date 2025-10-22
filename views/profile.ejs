@@ -26,8 +26,13 @@
       <ul>
         <% posts.forEach(post => { %>
           <li>
-            <a href="/posts/<%= post.post_id %>"><%= post.title %></a> &nbsp <a href='/posts/<%= post.post_id %>/update'>update</a>
-                 &nbsp <a href='/posts/<%= post.post_id %>/delete'>delete</a>
+            <a href="/posts/<%= post.post_id %>"><%= post.title %></a> 
+            <form action="/posts/<%= post.post_id %>/update" method="POST" style="display:inline;">
+  <button type="submit">Update</button>
+</form>
+                 <form action="/posts/<%= post.post_id %>/delete" method="POST" style="display:inline;">
+  <button type="submit">Delete</button>
+</form>
           </li>
         <% }) %>
       </ul>
