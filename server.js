@@ -212,19 +212,22 @@ app.get("/fyp", async (req, res) => {
 
     // Get user's own posts
     const myPostsResult = await pool.query(
-      "SELECT post_id, title, caption FROM posts WHERE user_id=$1 ORDER BY created_at DESC",
-      [userId]
-    );
+  `SELECT post_id, title, content, likes_count,caption, hashtags
+   FROM posts
+   WHERE user_id=$1
+   ORDER BY created_at DESC`,
+  [userId]
+);
     const myPosts = myPostsResult.rows;
 
     // Get all posts + usernames of their authors
     const allPostsResult = await pool.query(`
-      SELECT posts.title, posts.caption, users.username
-      FROM posts
-      JOIN users ON posts.user_id = users.user_id
-      ORDER BY posts.created_at DESC
-      LIMIT 10
-    `);
+  SELECT posts.title, posts.caption, posts.content, posts.likes_count, posts.hashtags, users.username
+  FROM posts
+  JOIN users ON posts.user_id = users.user_id
+  ORDER BY posts.created_at DESC
+  LIMIT 10
+`);
     const allPosts = allPostsResult.rows;
 
     res.render("fyp", { user, myPosts, allPosts });

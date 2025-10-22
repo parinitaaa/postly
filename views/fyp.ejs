@@ -18,26 +18,39 @@
       <h2>Hey, <%= user.username %> 👋</h2>
       <p>Welcome back to Postly!</p>
 
-      
+      <div class="card">
+        <h3>🌍 Explore Posts by All Users</h3>
 
+        <% if (allPosts.length > 0) { %>
+          <% allPosts.forEach(post => { %>
+            <article style="border:1px solid #ccc; margin:15px; padding:10px;">
+              <h2><%= post.title %></h2>
+              <p><i>by <%= post.username %></i></p>
+              <% if (post.content) { %>
+                 <p><%= post.content %></p>
+              <% } %>
 
-        <!-- All Posts -->
-        <div class="card">
-          <h3>🌍 Explore Posts by All Users</h3>
-          <% if (allPosts.length > 0) { %>
-            <ul>
-              <% allPosts.forEach(post => { %>
-                <li>
-                  <b><%= post.title %></b> — by <%= post.username %><br>
-                  <small><%= post.caption || "No caption" %></small>
-                </li>
-              <% }) %>
-            </ul>
-          <% } else { %>
-            <p>No posts available yet.</p>
-          <% } %>
-          <a href="/posts">See All Posts →</a>
-        </div>
+              <% if (post.caption) { %>
+                 <p><b>Caption:</b> <%= post.caption %></p>
+               <% } %>
+              
+
+              <% if (post.hashtags) { %>
+                <p><b>Hashtags:</b>
+                  <%= Array.isArray(post.hashtags) ? post.hashtags.join(", ") : post.hashtags %>
+                </p>
+              <% } %>
+
+              <div>
+  ❤️ Likes: <%= post.likes_count || 0 %> | 💬 Comments: <%= post.comments || 0 %>
+</div>
+            </article>
+          <% }) %>
+        <% } else { %>
+          <p>No posts available yet.</p>
+        <% } %>
+
+        <a href="/posts">See All Posts →</a>
       </div>
     </section>
   </body>
