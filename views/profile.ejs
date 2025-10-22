@@ -26,15 +26,17 @@
       <ul>
         <% posts.forEach(post => { %>
           <li>
-            <a href="/posts/<%= post.post_id %>"><%= post.title %></a>
+            <a href="/posts/<%= post.post_id %>"><%= post.title %></a> &nbsp <a href='/posts/<%= post.post_id %>/update'>update</a>
+                 &nbsp <a href='/posts/<%= post.post_id %>/delete'>delete</a>
           </li>
         <% }) %>
       </ul>
     <% } else { %>
       <p>You haven’t written any posts yet.</p>
-      <a href="/new" class="btn">📝 Create New Post</a>
+       <% } %>
+      <a href="/new" class="btn"> Create a New Post</a>
 
-    <% } %>
+   
 
   </section>
 </body>

@@ -142,9 +142,28 @@ app.get('/posts/:post_id',async(req,res)=>{
   const users=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
  const posts=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [post_id])).rows;
     res.render("posts",{posts,users});
-})
-  
+});
+
+app.get('/posts/:post_id/update',async(req,res)=>{
+    const postId=req.params.post_id;
+    console.log("Updating post ID:", postId);
+    const userId=req.session.userId;
+    if(!userId) return res.redirect('/login');
+    const user=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
+    const post=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [postId])).rows[0];
+    res.render("updatePost",{user,post});
+
+});
+
+app.post('/posts/:post_id/update',async(req,res)=>{
+    const postId=req.params.post_id;
+    const userId=req.session.userId;
+    if(!userId) return res.redirect('/login');
+    const { title, caption, content} = req.body;
+    await pool.query('update posts set title=$1,caption=$2,content=$3 where post_id=$4',[title, caption, content,postId]);
+    res.redirect('/profile');
     
+})
 
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
