@@ -1,0 +1,31 @@
+
+  <head>
+    <title>Create Post</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/profile">Back to Profile</a>
+    </nav>
+
+    <section>
+        <% if (user)  %>
+  <h1><%= user.username %></h1>
+      <strong><h3>Create a New Post</h3> </strong>
+      <form action="/new" method="POST">
+        <label>Title:</label><br>
+        <input type="text" name="title" required><br><br>
+
+        <label>Caption:</label><br>
+        <input type="text" name="caption" optional><br><br>
+
+        <label>Content:</label><br>
+        <textarea name="content" rows="6" required></textarea><br><br>
+
+        <label>Hashtags (comma separated):</label><br>
+        <input type="text" name="hashtags" placeholder="#life, #blog" optional><br><br>
+
+        <button type="submit">Publish</button>
+      </form>
+    </section>
+  </body>
+

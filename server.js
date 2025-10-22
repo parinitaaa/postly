@@ -17,7 +17,10 @@ app.use(express.json());
 app.use(session({
     secret: 'mysecret', // any random string
     resave: false,
-    saveUninitialized: true
+    saveUninitialized:false,
+    cookie: {
+        maxAge: 10 * 60 * 1000 // 10 minutes in milliseconds
+    }
 }));
 
 require('dotenv').config();
@@ -78,6 +81,9 @@ app.post('/login',async(req,res)=>{
 
 app.get("/profile", async (req, res) => {
     const userId = req.session.userId;
+     if (!userId) {
+        return res.redirect("/login");
+    }
   const user = (await pool.query("SELECT user_id, username, email, bio FROM users WHERE user_id=$1", [userId])).rows[0];
   const posts = (await pool.query("SELECT post_id, title FROM posts WHERE user_id=$1", [userId])).rows;
     res.render("profile", { user,posts });
@@ -105,6 +111,39 @@ app.post('/profile/edit',async(req,res)=>{
         await pool.query("UPDATE users SET username=$1, bio=$2 WHERE user_id=$3", [username, bio, userId]);
     res.redirect("/profile");
 })
+
+app.get('/new',async(req,res)=>{
+    const userId=req.session.userId;
+    if(!userId)
+        return res.redirect('/login');
+    const user = (await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
+     if (!user) {
+        return res.redirect('/login');
+    }
+    
+    res.render("createPost",{user});
+})
+
+app.post('/new',async(req,res)=>{
+    const userId=req.session.userId;
+    if(!userId)
+        return res.redirect('/login');
+    const {title,caption,content}=req.body;
+    await pool.query("insert into posts(user_id,title,caption,content) values($1,$2,$3,$4)",[userId,title,caption,content]);
+    res.redirect('/profile');
+
+});
+
+app.get('/posts/:post_id',async(req,res)=>{
+  const post_id=req.params.post_id;
+  const userId=req.session.userId;
+  if(!userId) return res.redirect('/login');
+  const users=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
+    const posts=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [post_id])).rows;
+    res.render("posts",{posts,users});
+})
+  
+    
 
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
