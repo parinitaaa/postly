@@ -212,7 +212,7 @@ app.get("/fyp", async (req, res) => {
 
     // Get user's own posts
     const myPostsResult = await pool.query(
-  `SELECT post_id, title, content, likes_count,caption, hashtags
+  `SELECT post_id, title, content, likes_count,caption,hashtags
    FROM posts
    WHERE user_id=$1
    ORDER BY created_at DESC`,
