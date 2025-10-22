@@ -62,17 +62,18 @@ app.post('/login',async(req,res)=>{
             <a href='/signup'>try creating an account first</a>`);
     }
    
-    const user = result.rows[0];
-    const isMatch = await bcrypt.compare(password,user.password);
+    const User = result.rows[0];
+    const isMatch = await bcrypt.compare(password,User.password);
     if(!isMatch){
         return res.send(`
                 <h2>Incorrect password!</h2>
                 <a href='/login'>Try again</a>
             `);
     }
-      req.session.userId = user.user_id;
-      req.session.username = user.username;
-      return res.redirect('/profile');
+      req.session.userId = User.user_id;
+      req.session.username = User.username;
+     
+      res.redirect('/fyp');
 });
 
 
@@ -190,9 +191,42 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
     await pool.query('DELETE FROM posts WHERE post_id=$1 AND user_id=$2', [postId, userId]);
     res.redirect('/profile');
 });
+
+
+app.get("/fyp", async (req, res) => {
+  const userId = req.session.userId;
+  if (!userId) return res.redirect("/login");
+    // Get logged-in user
+    const userResult = await pool.query("SELECT user_id, username, email, bio FROM users WHERE user_id=$1",[userId]);
+    const user = userResult.rows[0];
+
+    // Get user's own posts
+    const myPostsResult = await pool.query(
+      "SELECT post_id, title, caption FROM posts WHERE user_id=$1 ORDER BY created_at DESC",
+      [userId]
+    );
+    const myPosts = myPostsResult.rows;
+
+    // Get all posts + usernames of their authors
+    const allPostsResult = await pool.query(`
+      SELECT posts.title, posts.caption, users.username
+      FROM posts
+      JOIN users ON posts.user_id = users.user_id
+      ORDER BY posts.created_at DESC
+      LIMIT 10
+    `);
+    const allPosts = allPostsResult.rows;
+
+    res.render("fyp", { user, myPosts, allPosts });
+  
+  }
+);
+
+
 app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
 });
+
 
 app.listen(3000,()=>{
     console.log(`http://localhost:3000/`);

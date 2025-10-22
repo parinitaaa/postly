@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>For You - Postly</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <nav>
+      <h1>Postly</h1>
+      <div>
+        <a href="/profile">My Profile</a>
+        <a href="/new">Create Post</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+
+    <section class="dashboard">
+      <h2>Hey, <%= user.username %> 👋</h2>
+      <p>Welcome back to Postly!</p>
+
+      
+
+
+        <!-- All Posts -->
+        <div class="card">
+          <h3>🌍 Explore Posts by All Users</h3>
+          <% if (allPosts.length > 0) { %>
+            <ul>
+              <% allPosts.forEach(post => { %>
+                <li>
+                  <b><%= post.title %></b> — by <%= post.username %><br>
+                  <small><%= post.caption || "No caption" %></small>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p>No posts available yet.</p>
+          <% } %>
+          <a href="/posts">See All Posts →</a>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
