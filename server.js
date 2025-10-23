@@ -272,6 +272,29 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
     
     });
 
+    app.get('/comments/:post_id',async (req,res)=>{
+        const userId = req.session.userId;
+    const postId = req.params.post_id;
+    if (!userId) return res.redirect("/login");
+    const comment=(await pool.query('select c.* ,u.username from comments c join users u on c.user_id=u.user_id where c.post_id=$1 ORDER BY c.created_at ASC',[postId])).rows;
+    const post=(await pool.query('select p.*,u.username from posts p JOIN users u ON p.user_id = u.user_id where post_id=$1',[postId])).rows[0];
+    res.render("comments",{comment,post});
+
+    });
+
+    app.post('/comments/:post_id',async(req,res)=>{
+    const userId = req.session.userId;
+    const postId = req.params.post_id;
+    const { comment } = req.body;
+    if (!userId) return res.redirect("/login")
+
+    if (comment && comment.trim() !== "") {
+      await pool.query("INSERT INTO comments (user_id, post_id, comment) VALUES ($1, $2, $3)",[userId, postId, comment.trim()]);
+      await pool.query("UPDATE posts SET comments_count = comments_count + 1 WHERE post_id = $1",[postId]);
+    }
+   res.redirect(`/comments/${postId}`);
+    });
+
 
 
 

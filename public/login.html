@@ -1,11 +1,19 @@
 <head>
     <title>login page</title>
+    <style>
+        button a{
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
+
 </head>
 <body>
     <h1>Log In!</h1>
     <form action="/login" method="POST">
         <input type="email" name="email" placeholder="email" required>
         <input type="password" name="password" placeholder="password" required> <br><br>
-        <button type="submit">Log in</buttom>
+        <button type="submit">Log in</button>
     </form>
+    <br><button><a href='/signup'>Dont have an account?</a></button>
 </body>
