@@ -246,7 +246,7 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
         [userId]
         );
         const allPosts = allPostsResult.rows;
-        res.render("fyp", { user, myPosts, allPosts });
+        res.render("fyp", { user, myPosts, allPosts,q: '' });
     });
 
 
@@ -311,6 +311,44 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
         "INSERT INTO saved_posts (user_id, post_id) VALUES ($1, $2)", [userId, postId]);
         res.redirect("/fyp");
         });
+
+
+        app.get("/fyp/search", async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect("/login");
+
+    const query = req.query.q; // search string
+
+    // 1. Get logged-in user
+    const userResult = await pool.query(
+        "SELECT user_id, username, email, bio FROM users WHERE user_id=$1",
+        [userId]
+    );
+    const user = userResult.rows[0];
+
+    // 2. Search posts by title or hashtags OR users by username
+    const searchResult = await pool.query(
+        `SELECT p.post_id, p.title, p.caption, p.content, p.hashtags, p.likes_count, p.comments_count,
+                u.username,
+                EXISTS (
+                    SELECT 1 FROM likes WHERE likes.user_id=$1 AND likes.post_id=p.post_id
+                ) AS liked_by_user,
+                EXISTS (
+                    SELECT 1 FROM saved_posts WHERE saved_posts.user_id=$1 AND saved_posts.post_id=p.post_id
+                ) AS saved_by_user
+         FROM posts p
+         JOIN users u ON p.user_id = u.user_id
+         WHERE LOWER(p.title) LIKE LOWER('%' || $2 || '%')
+            OR LOWER(p.hashtags::text) LIKE LOWER('%' || $2 || '%')
+            OR LOWER(u.username) LIKE LOWER('%' || $2 || '%')
+         ORDER BY p.created_at DESC`,
+        [userId, query]
+    );
+
+    const allPosts = searchResult.rows;
+
+    res.render("fyp", { user, myPosts: [], allPosts,q: query }); // myPosts empty since search is global
+});
 
    
 
