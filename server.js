@@ -246,7 +246,7 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
         [userId]
         );
         const allPosts = allPostsResult.rows;
-        res.render("fyp", { user, myPosts, allPosts,q: '' });
+        res.render("fyp", { user, myPosts, allPosts,q: '' }); //passing q for search feature
     });
 
 
@@ -349,6 +349,41 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
 
     res.render("fyp", { user, myPosts: [], allPosts,q: query }); // myPosts empty since search is global
 });
+
+app.get("/saved", async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect("/login");
+
+    // 1. Get logged-in user details
+    const userResult = await pool.query(
+        "SELECT user_id, username, email, bio FROM users WHERE user_id=$1",
+        [userId]
+    );
+    const user = userResult.rows[0];
+
+    // 2. Get all posts saved by this user, with author info
+    const savedPostsResult = await pool.query(
+        `SELECT p.post_id, p.title, p.caption, p.content, p.hashtags, p.likes_count, p.comments_count,
+                u.username,
+                EXISTS (
+                    SELECT 1 FROM likes WHERE likes.user_id=$1 AND likes.post_id=p.post_id
+                ) AS liked_by_user,
+                EXISTS (
+                    SELECT 1 FROM saved_posts WHERE saved_posts.user_id = $1 AND saved_posts.post_id = p.post_id
+                ) AS saved_by_user
+         FROM posts p
+         JOIN users u ON p.user_id = u.user_id
+         JOIN saved_posts s ON s.post_id = p.post_id
+         WHERE s.user_id = $1
+         ORDER BY s.created_at DESC`,
+        [userId]
+    );
+
+    const savedPosts = savedPostsResult.rows;
+
+    res.render("savedPosts", { user, savedPosts });
+});
+
 
    
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= user.username %> - Saved Posts</title>
+  <link rel="stylesheet" href="/public/style.css">
+  <style>
+    .post-card {
+      border: 1px solid #ccc;
+      margin: 15px auto;
+      padding: 10px;
+      max-width: 600px;
+    }
+    .post-card h2 {
+      margin: 0;
+    }
+    .actions {
+      margin-top: 10px;
+    }
+    .actions form {
+      display: inline;
+    }
+    .actions button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: bold;
+      color:#333;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <button><a href="/fyp">For You</a></button>
+  <button>  <a href="/profile">Profile</a></button>
+   <button> <a href="/new">Create Post</a></button>
+  <button>  <a href="/logout">Logout</a></button>
+  </nav>
+
+  <h1 style="text-align:center;">Saved Posts of <%= user.username %></h1>
+
+  <% if (savedPosts.length > 0) { %>
+    <% savedPosts.forEach(post => { %>
+      <div class="post-card">
+        <h2><%= post.title %></h2>
+        <p><i>by <%= post.username %></i></p>
+        <% if (post.caption) { %>
+          <p><b>Caption:</b> <%= post.caption %></p>
+        <% } %>
+        <% if (post.content) { %>
+          <p><%= post.content %></p>
+        <% } %>
+        <% if (post.hashtags) { %>
+          <p><b>Hashtags:</b> <%= Array.isArray(post.hashtags) ? post.hashtags.join(", ") : post.hashtags %></p>
+        <% } %>
+        <div class="actions">
+          <form action="/likes/<%=post.post_id%>" method="POST">
+            <button type="submit">
+              <% if (post.liked_by_user) { %>❤️<% } else { %>🤍<% } %>
+              <%= post.likes_count || 0 %>
+            </button>
+          </form>
+
+          <form action="/save/<%= post.post_id %>" method="POST">
+            <button type="submit">
+              <% if (post.saved_by_user) { %>🟩 Unsave<% } else { %>⬜ Save<% } %>
+            </button>
+          </form>
+
+          <span>💬 <a href="/comments/<%= post.post_id %>"><%= post.comments_count || 0 %> Comments</a></span>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p style="text-align:center;">You haven’t saved any posts yet.</p>
+  <% } %>
+</body>
+</html>
