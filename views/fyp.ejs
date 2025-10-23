@@ -3,20 +3,44 @@
   <head>
     <title>For You - Postly</title>
     <link rel="stylesheet" href="/style.css">
+     <style>
+      nav {
+        display: flex;
+        justify-content: space-between; /* h1 on left, links on right */
+        align-items: center;            /* vertically center items */
+        padding: 10px 20px;
+        background-color: #f8f9fa;      /* light background */
+        
+      }
+      nav h1 {
+        margin: 0;
+      }
+      nav a {
+        text-decoration: none;
+        color: #333;
+      }
+      
+
+      .dashboard h2,.heading p{
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
     <nav>
       <h1>Postly</h1>
       <div>
-        <a href="/profile">My Profile</a>
-        <a href="/new">Create Post</a>
-        <a href="/logout">Logout</a>
+        <a href="/profile">👤My Profile</a>
+        <a href="/new">📝Create Post</a>
+        <a href="/login">⬅️Logout</a>
       </div>
     </nav>
 
     <section class="dashboard">
-      <h2>Hey, <%= user.username %> 👋</h2>
-      <p>Welcome back to Postly!</p>
+      <div class ="heading">
+      <h2> yoo wassup <%= user.username %></h2>
+      <p> Welcome back to Postly! </p>
+      </div>
 
       <div class="card">
         <h3>your for you page ;)</h3>
@@ -42,8 +66,22 @@
               <% } %>
 
               <div>
-  ❤️ Likes: <%= post.likes_count || 0 %> | 💬 Comments: <%= post.comments || 0 %>
+  <form 
+    action="<%= post.liked_by_user ? '/unlike/' + post.post_id : '/likes/' + post.post_id %>"
+    method="POST"
+    style="display:inline;"
+  >
+    <button type="submit" style="border:none; background:none; cursor:pointer; font-size:18px;">
+      <% if (post.liked_by_user) { %>
+        ❤️
+      <% } else { %>
+        🤍
+      <% } %>
+    </button>
+  </form>
+  <span><%= post.likes_count || 0 %> Likes | 💬 <%= post.comments_count || 0 %> Comments</span>
 </div>
+
             </article>
           <% }) %>
         <% } else { %>
