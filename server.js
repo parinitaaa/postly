@@ -164,7 +164,6 @@ app.get('/posts/:post_id/update',async(req,res)=>{
     if (isNaN(postId)) return res.send("Invalid post ID");
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
-
     const user=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
     const post=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [postId])).rows[0];
     res.render("updatePost",{user,post});
@@ -207,37 +206,74 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
 });
 
 
-app.get("/fyp", async (req, res) => {
-  const userId = req.session.userId;
-  if (!userId) return res.redirect("/login");
-    // Get logged-in user
-    const userResult = await pool.query("SELECT user_id, username, email, bio FROM users WHERE user_id=$1",[userId]);
-    const user = userResult.rows[0];
+    app.get("/fyp", async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) return res.redirect("/login");
 
-    // Get user's own posts
-    const myPostsResult = await pool.query(
-  `SELECT post_id, title, content, likes_count,caption,hashtags,comments_count
-   FROM posts
-   WHERE user_id=$1
-   ORDER BY created_at DESC`,
-  [userId]
-);
-    const myPosts = myPostsResult.rows;
+        // 1. Get logged-in user details
+        const userResult = await pool.query(
+        "SELECT user_id, username, email, bio FROM users WHERE user_id=$1",
+        [userId]
+        );
+        const user = userResult.rows[0];
 
-    // Get all posts + usernames of their authors
-    const allPostsResult = await pool.query(`
-  SELECT posts.title, posts.caption, posts.content, posts.likes_count, posts.hashtags, users.username
-  FROM posts
-  JOIN users ON posts.user_id = users.user_id
-  ORDER BY posts.created_at DESC
-  LIMIT 10
-`);
-    const allPosts = allPostsResult.rows;
+        // 2. Get user's own posts with liked_by_user info
+        const myPostsResult = await pool.query(
+        `SELECT p.post_id, p.title, p.caption, p.content, p.hashtags, p.likes_count, p.comments_count,
+                EXISTS (
+                    SELECT 1 FROM likes WHERE likes.user_id=$1 AND likes.post_id=p.post_id
+                ) AS liked_by_user
+        FROM posts p
+        WHERE p.user_id=$1
+        ORDER BY p.created_at DESC`,
+        [userId]
+        );
+        const myPosts = myPostsResult.rows;
 
-    res.render("fyp", { user, myPosts, allPosts });
-  
-  }
-);
+        // 3. Get all posts with author usernames and liked_by_user info
+        const allPostsResult = await pool.query(
+        `SELECT p.post_id, p.title, p.caption, p.content, p.hashtags, p.likes_count, p.comments_count,
+                u.username,
+                EXISTS (
+                    SELECT 1 FROM likes WHERE likes.user_id=$1 AND likes.post_id=p.post_id
+                ) AS liked_by_user
+        FROM posts p
+        JOIN users u ON p.user_id = u.user_id
+        ORDER BY p.created_at DESC`,
+        [userId]
+        );
+        const allPosts = allPostsResult.rows;
+        res.render("fyp", { user, myPosts, allPosts });
+    });
+
+
+
+    app.post("/likes/:postId", async (req, res) => {
+    const userId = req.session.userId;
+    const postId = req.params.postId;
+    if (!userId) return res.redirect("/login");
+
+    
+        // check if user already liked this post
+        const existing = await pool.query(
+        "SELECT * FROM likes WHERE user_id=$1 AND post_id=$2",
+        [userId, postId]
+        );
+
+        if(existing.rowCount === 0) { //like
+        await pool.query("INSERT INTO likes (user_id, post_id) VALUES ($1, $2)",[userId, postId]);
+        await pool.query("UPDATE posts SET likes_count = likes_count + 1 WHERE post_id=$1",[postId]);
+        }
+        
+        else if (existing.rowCount > 0) { //dislike
+        await pool.query( "DELETE FROM likes WHERE user_id=$1 AND post_id=$2", [userId, postId] ); 
+        await pool.query( "UPDATE posts SET likes_count = GREATEST(likes_count - 1, 0) WHERE post_id=$1", [postId] ); }
+        res.redirect("/fyp");
+    
+    });
+
+
+
 
 
 /*app.get('/home',(req,res)=>{
