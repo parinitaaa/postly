@@ -66,11 +66,7 @@
               <% } %>
 
               <div>
-  <form 
-    action="<%= post.liked_by_user ? '/unlike/' + post.post_id : '/likes/' + post.post_id %>"
-    method="POST"
-    style="display:inline;"
-  >
+  <form action="/likes/<%=post.post_id%>" method="POST" style="display:inline;">
     <button type="submit" style="border:none; background:none; cursor:pointer; font-size:18px;">
       <% if (post.liked_by_user) { %>
         ❤️
