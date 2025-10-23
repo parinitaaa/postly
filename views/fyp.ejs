@@ -79,7 +79,16 @@
       <% } %>
     </button>
   </form>
-  <span><%= post.likes_count || 0 %> Likes |&nbsp<section class="comments"><a href="/comments/<%= post.post_id %>">💬 <%= post.comments_count || 0 %> Comments</a></section> </span>
+  <span><%= post.likes_count || 0 %> Likes | &nbsp <section class="comments"><a href="/comments/<%= post.post_id %>">💬 <%= post.comments_count || 0 %> Comments</a></section> </span>
+              <form action="/save/<%= post.post_id %>" method="POST" style="display:inline;">
+  <button type="submit" style="border:none; background:none; cursor:pointer;">
+    <% if (post.saved_by_user) { %>
+      🟩 unsave<!-- black square when saved -->
+    <% } else { %>
+      ⬜ save <!-- white square when not saved -->
+    <% } %>
+  </button>
+</form>
 </div>
 
             </article>
