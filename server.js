@@ -236,7 +236,10 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
                 u.username,
                 EXISTS (
                     SELECT 1 FROM likes WHERE likes.user_id=$1 AND likes.post_id=p.post_id
-                ) AS liked_by_user
+                ) AS liked_by_user,
+                 EXISTS (
+                 SELECT 1 FROM saved_posts WHERE saved_posts.user_id = $1 AND saved_posts.post_id = p.post_id
+                 ) AS saved_by_user
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
         ORDER BY p.created_at DESC`,
@@ -295,7 +298,21 @@ app.get('/posts/:post_id/delete', async (req, res) => { //get request when you t
    res.redirect(`/comments/${postId}`);
     });
 
+    app.post("/save/:postId", async (req, res) => {
+        const userId = req.session.userId;
+  const postId = req.params.postId;
+  if (!userId) return res.redirect("/login");
+        
+ const existing = await pool.query( "SELECT * FROM saved_posts WHERE user_id=$1 AND post_id=$2", [userId, postId]);
+      if (existing.rowCount > 0) 
+        await pool.query( "DELETE FROM saved_posts WHERE user_id=$1 AND post_id=$2", [userId, postId]);
+    else
+        await pool.query(
+        "INSERT INTO saved_posts (user_id, post_id) VALUES ($1, $2)", [userId, postId]);
+        res.redirect("/fyp");
+        });
 
+   
 
 
 
