@@ -45,6 +45,11 @@
       <h2> yoo wassup <%= user.username %></h2>
       <p> Welcome back to Postly! </p>
       </div>
+      <form action="/fyp/search" method="GET" style="text-align:center; margin-bottom:20px;">
+      <input type="text" name="q" value="<%=q || '' %>" placeholder="Search users, titles, hashtags..." required style="padding:5px; width:250px;">
+      <button type="submit" style="padding:5px;">🔍 Search</button>
+    </form>
+  </div>
 
       <div class="card">
         <h3>your for you page ;)</h3>
