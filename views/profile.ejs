@@ -2,44 +2,90 @@
 <head>
   <title><%= user.username %> - Profile</title>
   <link rel="stylesheet" href="/public/style.css">
+  <style>
+    button a{
+      text-decoration: none;
+      color:#333;
+    }
+    .about-box {
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 300px;       /* adjust as needed */
+  margin: 20px auto;  /* centers the box */
+  text-align: center;
+}
+.posts{
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 450px;       /* adjust as needed */
+  margin: 20px auto;  /* centers the box */
+  text-align: center;
+
+}
+
+
+.posts ul {
+  list-style: none;
+  padding-left: 0;
+  text-align: left;    /* list items start from the left */
+}
+
+.posts li {
+  margin-bottom: 10px; /* spacing between items */
+   text-align: left;
+}
+
+.profile-container{
+  border: 1px solid #ccc;
+  width:1000px;
+  margin: 20px auto;
+
+}
+  </style>
 </head>
 
 <body>
   <nav>
-    <a href="/">Home</a>
-    <a href="/login">Logout</a>
+    <button ><a href="/">Home</a></button>
+    <button><a href="/login">Logout</a></button>
   </nav>
 
   <section class="profile-container">
-
+<div class="about-box">
     <% if(user) { %>
-    <h1>👤 <%= user.username %></h1>
+    <h1>Yooo wassup <%= user.username %> 🤪</h1>
     <p><b>Email:</b> <%= user.email %></p>
     <p><b>Bio:</b> <%= user.bio || "No bio yet." %></p>
-    <a href="/profile/edit">Edit Profile</a>
+  <button>  <a href="/profile/edit">Edit Profile</a></button>
     <% } else { %>
       <p> user not found :(</p>
       <% } %>
-
-       <h2>📝 Your Posts</h2>
+    </div>
+<div class="posts">
+       <h2>Your posties</h2>
     <% if (posts.length > 0) { %>
       <ul>
-        <% posts.forEach(post => { %>
+        <% posts.forEach(x => { %>
           <li>
-            <a href="/posts/<%= post.post_id %>"><%= post.title %></a> &nbsp <a href='/posts/${post.post_id}/update'>update</a>
-                 &nbsp <a href='/posts/${post.post_id}/'>delete</a>
+            <a href="/posts/<%= x.post_id %>"><%= x.title %></a> &nbsp
+            <a href='/posts/<%= x.post_id %>/update'>update</a>
+                 &nbsp <a href='/posts/<%= x.post_id %>/delete'>delete</a>
+                 
           </li>
         <% }) %>
       </ul>
     <% } else { %>
       <p>You haven’t written any posts yet.</p>
        <% } %>
-       &nbsp<a href="/new" class="btn"> Create a New Post</a>  &nbsp<a href="/posts" class="btn">View my posts</a>
-       &nbsp<a href="/fyp" class="btn"> For You Page</a>
-
+       </div>
+      
 
    
 
   </section>
+   &nbsp<button><a href="/new" class="btn"> Create a New Post</a> </button> 
+   &nbsp<button><a href="/posts" class="btn">View my posts</a></button>
+   &nbsp<button><a href="/fyp" class="btn"> For You Page</a></button>
+
 </body>
 
