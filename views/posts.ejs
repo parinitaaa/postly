@@ -2,26 +2,32 @@
 <html>
   <head>
     <title>All Posts</title>
+    <style>
+    nav a{
+      text-decoration: none;
+      color:#333;
+    }
+  </style>
   </head>
   <body>
     <nav>
-      <a href="/profile">My Profile</a>
-      <a href="/new">Create Post</a>
+      <button><a href="/profile">My Profile</a></button>
+      <button><a href="/new">Create Post</a></button>
     </nav>
 
     <section>
       <h1>All Posts</h1>
-      <% posts.forEach(post =>{ %>
+      <% posts.forEach(x =>{ %>
         <article style="border:1px solid #ccc; margin:15px; padding:10px;">
-           <h2><%= post.title %></h2>
+           <h2><%= x.title %></h2>
           <p><i>by <%= users.username %></i></p>
-          <p>caption: <%= post.caption %></p>
-          <p><%= post.content %></p>
-          <% if (post.hashtags && post.hashtags.length) { %>
-            <p>hashtags: <%= post.hashtags.join(", ") %></p>
+          <p>caption: <%= x.caption %></p>
+          <p><%= x.content %></p>
+          <% if (x.hashtags && x.hashtags.length) { %>
+            <p>hashtags: <%= x.hashtags.join(", ") %></p>
           <% } %>
           <div>
-            likes: <%= post.likes_count %> | comments: <%= post.comments_count %>
+            likes: <%= x.likes_count %> | comments: <%= x.comments_count %>
           </div>
         </article>
       <% }) %>
