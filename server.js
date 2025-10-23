@@ -16,7 +16,7 @@ app.use(session({
     resave: false,
     saveUninitialized:false,
     cookie: {
-        maxAge: 10 * 60 * 1000 // 10 minutes in milliseconds
+        maxAge: 30 * 60 * 1000 // 10 minutes in milliseconds
     }
 }));
 
@@ -83,7 +83,7 @@ app.get("/profile", async (req, res) => {
         return res.redirect("/login");
     }
   const user = (await pool.query("SELECT user_id, username, email, bio FROM users WHERE user_id=$1", [userId])).rows[0];
-  const posts = (await pool.query("SELECT post_id, title FROM posts WHERE user_id=$1", [userId])).rows;
+  const posts = (await pool.query("SELECT * FROM posts WHERE user_id=$1", [userId])).rows;
     res.render("profile", { user,posts });
 })
 
@@ -115,11 +115,13 @@ app.get('/new',async(req,res)=>{
     if(!userId)
         return res.redirect('/login');
     const user = (await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
+    const posts=(await pool.query("select * from posts")).rows;
+    const length=posts.length;
      if (!user) {
         return res.redirect('/login');
     }
     
-    res.render("createPost",{user});
+    res.render("createPost",{user,length});
 })
 
 app.post('/new',async(req,res)=>{
@@ -158,9 +160,11 @@ app.get('/posts/:post_id',async(req,res)=>{
 });
 
 app.get('/posts/:post_id/update',async(req,res)=>{
-    const postId=req.params.post_id;
+    const postId=parseInt(req.params.post_id);
+    if (isNaN(postId)) return res.send("Invalid post ID");
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
+
     const user=(await pool.query("SELECT * FROM users WHERE user_id=$1", [userId])).rows[0];
     const post=(await pool.query("SELECT * FROM posts WHERE post_id=$1", [postId])).rows[0];
     res.render("updatePost",{user,post});
@@ -168,7 +172,7 @@ app.get('/posts/:post_id/update',async(req,res)=>{
 });
 
 app.post('/posts/:post_id/update',async(req,res)=>{
-    const postId=req.params.post_id;
+    const postId=parseInt(req.params.post_id);
     if (isNaN(postId)) return res.send("Invalid post ID");
     const userId=req.session.userId;
     if(!userId) return res.redirect('/login');
@@ -212,7 +216,7 @@ app.get("/fyp", async (req, res) => {
 
     // Get user's own posts
     const myPostsResult = await pool.query(
-  `SELECT post_id, title, content, likes_count,caption,hashtags
+  `SELECT post_id, title, content, likes_count,caption,hashtags,comments_count
    FROM posts
    WHERE user_id=$1
    ORDER BY created_at DESC`,
@@ -236,9 +240,9 @@ app.get("/fyp", async (req, res) => {
 );
 
 
-app.get('/home',(req,res)=>{
+/*app.get('/home',(req,res)=>{
     res.send(`<html><h1>HIIIIIII</h1></html>`);
-});
+});*/
 
 
 app.listen(3000,()=>{
